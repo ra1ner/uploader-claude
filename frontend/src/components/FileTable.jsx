@@ -35,6 +35,7 @@ export default function FileTable({ files, onRefresh }) {
             <th>File name</th>
             <th>Size</th>
             <th>Uploaded</th>
+            <th>Uploaded by</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -48,6 +49,7 @@ export default function FileTable({ files, onRefresh }) {
               </td>
               <td>{formatBytes(f.size)}</td>
               <td>{formatDate(f.last_modified)}</td>
+              <td>{f.uploaded_by || "—"}</td>
               <td>
                 <div className="actions-cell">
                   <CopyLinkButton url={f.url} />

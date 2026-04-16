@@ -35,6 +35,7 @@ class FileItem(BaseModel):
     url: str
     size: int
     last_modified: Optional[datetime] = None
+    uploaded_by: Optional[str] = None
 
 
 class UploadResponse(BaseModel):

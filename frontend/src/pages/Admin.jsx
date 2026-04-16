@@ -22,6 +22,13 @@ export default function Admin() {
   const [newUsername, setNewUsername] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newRole, setNewRole] = useState("user");
+
+  function generatePassword() {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*";
+    const arr = new Uint8Array(10);
+    crypto.getRandomValues(arr);
+    return Array.from(arr, (b) => chars[b % chars.length]).join("");
+  }
   const [formError, setFormError] = useState("");
   const [formLoading, setFormLoading] = useState(false);
 
@@ -73,7 +80,8 @@ export default function Admin() {
   }
 
   async function handleChangePassword(id) {
-    const pwd = window.prompt("New password:");
+    const suggested = generatePassword();
+    const pwd = window.prompt("New password (or edit):", suggested);
     if (!pwd) return;
     try {
       await changePassword(id, pwd);
@@ -111,12 +119,23 @@ export default function Admin() {
               </div>
               <div className="form-group">
                 <label>Password</label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                />
+                <div style={{ display: "flex", gap: 8 }}>
+                  <input
+                    type="text"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    style={{ flex: 1 }}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-ghost"
+                    onClick={() => setNewPassword(generatePassword())}
+                    title="Generate password"
+                  >
+                    Generate
+                  </button>
+                </div>
               </div>
               <div className="form-group">
                 <label>Role</label>

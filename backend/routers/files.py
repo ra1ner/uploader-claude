@@ -88,6 +88,7 @@ async def upload_file(
         ContentType=content_type,
         ContentDisposition="inline",
         ACL="public-read",
+        Metadata={"uploaded-by": current_user.get("username", "unknown")},
     )
 
     return UploadResponse(
@@ -104,12 +105,18 @@ def list_files(current_user: dict = Depends(get_current_user)):
     result = s3.list_objects_v2(Bucket=S3_BUCKET)
     items = []
     for obj in result.get("Contents", []):
+        try:
+            head = s3.head_object(Bucket=S3_BUCKET, Key=obj["Key"])
+            uploaded_by = head.get("Metadata", {}).get("uploaded-by")
+        except Exception:
+            uploaded_by = None
         items.append(
             FileItem(
                 key=obj["Key"],
                 url=build_url(obj["Key"]),
                 size=obj["Size"],
                 last_modified=obj["LastModified"],
+                uploaded_by=uploaded_by,
             )
         )
     # Sort newest first
